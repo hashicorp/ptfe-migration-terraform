@@ -1,0 +1,96 @@
+#cloud-config
+
+write_files:
+    -   path: /etc/replicated.rli
+        owner: root:root
+        permissions: "0444"
+        encoding: b64
+        content: ${license_b64}
+
+    -   path: /etc/replicated-ptfe.conf
+        owner: root:root
+        permissions: "0644"
+        content: |
+            {
+                "hostname": {
+                    "value": "${hostname}"
+                },
+                "enc_password": {
+                    "value": "${enc_password}"
+                },
+                "installation_type": {
+                    "value": "production"
+                },
+                "production_type": {
+                    "value": "external"
+                },
+                "pg_user": {
+                    "value": "${pg_user}"
+                },
+                "pg_password": {
+                    "value": "${pg_password}"
+                },
+                "pg_netloc": {
+                    "value": "${pg_netloc}"
+                },
+                "pg_dbname": {
+                    "value": "${pg_dbname}"
+                },
+                "pg_extra_params": {
+                    "value": "${pg_extra_params}"
+                },
+                "aws_instance_profile": {
+                    "value": "1"
+                },
+                "s3_bucket": {
+                    "value": "${s3_bucket_name}"
+                },
+                "s3_region": {
+                    "value": "${s3_bucket_region}"
+                }
+            }
+
+    ## https://help.replicated.com/docs/kb/developer-resources/automate-install/
+    ## TlsBootstrap* is irrelevant, as we're putting a real cert on the ELB.
+    -   path: /etc/replicated.conf
+        owner: root:root
+        permissions: "0644"
+        content: |
+            {
+                "DaemonAuthenticationType":     "password",
+                "DaemonAuthenticationPassword": "${console_password}",
+
+                "TlsBootstrapType":             "self-signed",
+
+                "ImportSettingsFrom":           "/etc/replicated-ptfe.conf",
+                "LicenseFileLocation":          "/etc/replicated.rli"
+            }
+
+    -   path: /var/lib/ptfe-create-schemas.sql
+        owner: root:root
+        permissions: "0444"
+        content: |
+            CREATE SCHEMA IF NOT EXISTS rails    AUTHORIZATION ${pg_user};
+            CREATE SCHEMA IF NOT EXISTS vault    AUTHORIZATION ${pg_user};
+            CREATE SCHEMA IF NOT EXISTS registry AUTHORIZATION ${pg_user};
+            DROP SCHEMA IF EXISTS public;
+
+    -   path: /var/lib/cloud/scripts/per-once/install-ptfe.sh
+        owner: root:root
+        permissions: "0555"
+        encoding: b64
+        content: ${install_ptfe_sh}
+
+    -   path: /run/proxy-url
+        owner: root:root
+        permissions: "0444"
+        content: ${proxy_url}
+
+    -   path: /run/no-proxy
+        owner: root:root
+        permissions: "0444"
+        content: ${no_proxy}
+
+packages:
+    - jq
+    - postgresql-client
