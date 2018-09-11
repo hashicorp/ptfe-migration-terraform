@@ -317,16 +317,6 @@ module "db" {
   db_name                 = "${var.db_name}"
 }
 
-module "redis" {
-  source        = "../modules/redis"
-  disable       = "${var.local_redis}"
-  name          = "tfe-${random_id.installation-id.hex}"
-  subnet_ids    = "${var.data_subnet_ids}"
-  vpc_cidr      = "${data.aws_vpc.vpc.cidr_block}"
-  vpc_id        = "${data.aws_subnet.instance.vpc_id}"
-  instance_type = "cache.m3.medium"
-}
-
 output "kms_key_id" {
   value = "${coalesce(var.kms_key_id, join("", aws_kms_key.key.*.arn))}"
 }

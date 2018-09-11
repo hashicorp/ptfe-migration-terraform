@@ -66,15 +66,23 @@ license_file = "/path/to/license.rli"
 Where the value is the path on your disk. If you put it in the current directory, you can
 specify just the name rather than the full path.
 
+## Initialize
+
+You're now ready to initialize the new terraform modules:
+
+```
+terraform init ./terraform/aws-standard
+```
+
 ## Application
 
 Now we're ready to terraform! 
 
-Run `terraform plan ./terraform` to see the changes that will be made. Double check that they are
+Run `terraform plan ./terraform/aws-standard` to see the changes that will be made. Double check that they are
 correct before continuning. You should not see any changes to your `aws_db_instance` or `aws_s3_bucket`.
 If you do, please contact support before continiuing.
 
-When you're satified with the plan, apply it: `terraform apply ./terraform`. This will remove the AMI
+When you're satified with the plan, apply it: `terraform apply ./terraform/aws-standard`. This will remove the AMI
 instance and boot one running the installer in it's place, configured with all the values provided
 by the existing terraform state, plus the license and encryption password you added.
 
