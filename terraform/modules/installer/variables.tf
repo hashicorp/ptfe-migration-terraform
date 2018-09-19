@@ -75,6 +75,12 @@ variable "ssh_user" {
   default     = "ubuntu"
 }
 
+variable "release_number" {
+  description = "The sequence number of the release to install"
+  type        = "string"
+  default     = ""
+}
+
 ### ======================================================================= MISC
 
 ## random password for the replicated console

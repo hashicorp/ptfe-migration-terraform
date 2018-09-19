@@ -59,6 +59,7 @@ write_files:
             {
                 "DaemonAuthenticationType":     "password",
                 "DaemonAuthenticationPassword": "${console_password}",
+                "ReleaseSequence": ${release_sequence != "" ? release_sequence : "0"},
 
                 "TlsBootstrapType":             "self-signed",
 

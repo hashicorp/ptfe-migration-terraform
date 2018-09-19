@@ -94,6 +94,11 @@ variable "instance_type" {
   default     = "m4.2xlarge"
 }
 
+variable "release_number" {
+  description = "The sequence number of the release to install"
+  default     = ""
+}
+
 data "aws_subnet" "instance" {
   id = "${var.instance_subnet_id}"
 }
@@ -295,6 +300,7 @@ module "instance" {
   local_setup                 = "${var.local_setup}"
   license_file                = "${var.license_file}"
   encryption_password         = "${var.encryption_password}"
+  release_number              = "${var.release_number}"
 }
 
 module "db" {

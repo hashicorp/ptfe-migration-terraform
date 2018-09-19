@@ -18,8 +18,9 @@ data "template_file" "cloud_config" {
   template = "${file("${path.module}/templates/cloud-config.yaml")}"
 
   vars {
-    license_b64     = "${base64encode(file("${var.license_file}"))}"
-    install_ptfe_sh = "${base64encode(file("${path.module}/files/install-ptfe.sh"))}"
+    license_b64      = "${base64encode(file("${var.license_file}"))}"
+    install_ptfe_sh  = "${base64encode(file("${path.module}/files/install-ptfe.sh"))}"
+    release_sequence = "${var.release_number}"
 
     console_password = "${random_pet.console_password.id}"
     enc_password     = "${var.encryption_password != "" ? var.encryption_password : random_pet.enc_password.id}"
