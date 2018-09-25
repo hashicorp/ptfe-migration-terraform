@@ -56,37 +56,8 @@ variable "db_username" {
   default     = "atlas"
 }
 
-variable "local_db" {
-  description = "Use the database on the instance (alpha feature)"
-  default     = false
-}
-
-variable "local_redis" {
-  description = "Use redis on the instance"
-  default     = true
-}
-
 variable "region" {
   description = "AWS region to place cluster into"
-}
-
-variable "ami_id" {
-  description = "The AMI of a Terraform Enterprise Base image"
-}
-
-variable "ebs_size" {
-  default     = 100
-  description = "Size of the EBS volume"
-}
-
-variable "ebs_redundancy" {
-  description = "Number of redundent EBS volumes to configure"
-  default     = 2
-}
-
-variable "local_setup" {
-  description = "Write the setup configuration data local, not in S3"
-  default     = false
 }
 
 variable "instance_type" {
@@ -143,18 +114,6 @@ variable "kms_key_id" {
   default     = ""
 }
 
-variable "archivist_sse" {
-  type        = "string"
-  description = "Setting for server-side encryption of objects in S3; if provided, must be set to 'aws:kms'"
-  default     = ""
-}
-
-variable "archivist_kms_key_id" {
-  type        = "string"
-  description = "An optional KMS key for use by Archivist to enable S3 server-side encryption"
-  default     = ""
-}
-
 variable "arn_partition" {
   description = "AWS partition to use (used mostly by govcloud)"
   default     = "aws"
@@ -163,11 +122,6 @@ variable "arn_partition" {
 variable "internal_elb" {
   description = "Indicates that this installation is to be accessed only by a private subnet"
   default     = false
-}
-
-variable "startup_script" {
-  description = "Shell or other cloud-init compatible code to run on startup"
-  default     = ""
 }
 
 variable "external_security_group_ids" {
@@ -191,6 +145,18 @@ variable "no_proxy" {
   type        = "string"
   description = "hosts to exclude from proxying (only applies when proxy_url is set)"
   default     = ""
+}
+
+variable "custom_ami" {
+  type        = "string"
+  description = "AMI to install software into, defaults to Ubuntu 16.04"
+  default     = ""
+}
+
+variable "volume_size" {
+  description = "size of the root volume in gb"
+  type        = "string"
+  default     = "40"
 }
 
 variable "license_file" {
@@ -270,7 +236,6 @@ module "route53" {
 module "instance" {
   source                      = "../modules/installer"
   installation_id             = "${random_id.installation-id.hex}"
-  ami_id                      = "${var.ami_id}"
   instance_type               = "${var.instance_type}"
   hostname                    = "${var.fqdn}"
   vpc_id                      = "${data.aws_subnet.instance.vpc_id}"
@@ -278,26 +243,23 @@ module "instance" {
   instance_subnet_id          = "${var.instance_subnet_id}"
   elb_subnet_id               = "${var.elb_subnet_id}"
   key_name                    = "${var.key_name}"
-  db_username                 = "${var.local_db ? "atlasuser" : var.db_username}"
-  db_password                 = "${var.local_db ? "databasepassword" : var.db_password}"
-  db_endpoint                 = "${var.local_db ? "127.0.0.1:5432" : module.db.endpoint}"
-  db_database                 = "${var.local_db ? "atlas_production" : module.db.database}"
+  db_username                 = "${var.db_username}"
+  db_password                 = "${var.db_password}"
+  db_endpoint                 = "${module.db.endpoint}"
+  db_database                 = "${module.db.database}"
   bucket_name                 = "${var.bucket_name}"
   bucket_region               = "${var.region}"
   kms_key_id                  = "${coalesce(var.kms_key_id, join("", aws_kms_key.key.*.arn))}"
-  archivist_sse               = "${var.archivist_sse}"
-  archivist_kms_key_id        = "${var.archivist_kms_key_id}"
   bucket_force_destroy        = "${var.bucket_force_destroy}"
   manage_bucket               = "${var.manage_bucket}"
   arn_partition               = "${var.arn_partition}"
   internal_elb                = "${var.internal_elb}"
-  ebs_redundancy              = "${(var.local_redis || var.local_db) ? var.ebs_redundancy : 0}"
-  startup_script              = "${var.startup_script}"
   external_security_group_ids = "${var.external_security_group_ids}"
   internal_security_group_ids = "${var.internal_security_group_ids}"
   proxy_url                   = "${var.proxy_url}"
   no_proxy                    = "${var.no_proxy}"
-  local_setup                 = "${var.local_setup}"
+  custom_ami                  = "${var.custom_ami}"
+  volume_size                 = "${var.volume_size}"
   license_file                = "${var.license_file}"
   encryption_password         = "${var.encryption_password}"
   release_number              = "${var.release_number}"
@@ -305,7 +267,6 @@ module "instance" {
 
 module "db" {
   source                  = "../modules/rds"
-  disable                 = "${var.local_db}"
   instance_class          = "${var.db_instance_class}"
   multi_az                = "${var.db_multi_az}"
   name                    = "tfe-${random_id.installation-id.hex}"
