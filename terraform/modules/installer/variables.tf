@@ -69,12 +69,6 @@ variable "custom_ami" {
   default     = ""
 }
 
-variable "ssh_user" {
-  description = "the user to connect to the instance as"
-  type        = "string"
-  default     = "ubuntu"
-}
-
 variable "release_number" {
   description = "The sequence number of the release to install"
   type        = "string"
@@ -106,35 +100,7 @@ variable "elb_subnet_id" {}
 
 variable "key_name" {}
 
-variable "ami_id" {}
-
 variable "kms_key_id" {}
-
-variable "archivist_sse" {
-  type        = "string"
-  description = "Setting for server-side encryption of objects in S3; if provided, must be set to 'aws:kms'"
-  default     = ""
-}
-
-variable "archivist_kms_key_id" {
-  type        = "string"
-  description = "KMS key ID used by Archivist to enable S3 server-side encryption"
-  default     = ""
-}
-
-variable "local_setup" {
-  default = false
-}
-
-variable "ebs_size" {
-  description = "Size (in GB) of the EBS volumes"
-  default     = 100
-}
-
-variable "ebs_redundancy" {
-  description = "Number of redundent EBS volumes to configure"
-  default     = 2
-}
 
 variable "arn_partition" {
   description = "AWS partition to use (used mostly by govcloud)"
@@ -143,11 +109,6 @@ variable "arn_partition" {
 
 variable "internal_elb" {
   default = false
-}
-
-variable "startup_script" {
-  description = "Shell or other cloud-init compatible code to run on startup"
-  default     = ""
 }
 
 variable "external_security_group_ids" {
