@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 resource "aws_iam_role" "tfe_iam_role" {
   name = "tfe_iam_role-${var.installation_id}"
 

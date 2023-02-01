@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 output "replicated_console_password" {
   value = "${random_pet.console_password.id}"
 }
