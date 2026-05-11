@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2018, 2026
+
 resource "aws_iam_role" "tfe_iam_role" {
   name = "tfe_iam_role-${var.installation_id}"
 

@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2018, 2026
+
 output "replicated_console_password" {
   value = "${random_pet.console_password.id}"
 }
