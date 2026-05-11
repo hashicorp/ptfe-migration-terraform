@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2018, 2026
+
 variable "hostname" {}
 
 variable "zone_id" {}

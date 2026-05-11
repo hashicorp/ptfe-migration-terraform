@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2018, 2026
+
 variable "instance_class" {}
 
 variable "multi_az" {}

@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright IBM Corp. 2018, 2026
+
 set -e -u -o pipefail
 
 ## https://help.replicated.com/docs/kb/developer-resources/automate-install/
